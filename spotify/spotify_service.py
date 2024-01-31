@@ -57,42 +57,33 @@ class SpotifyManager:
                 artist_features[artist['id']] = artist
         return artist_features
 
+    def get_album_features_for_tracks(self, album_ids):
+        """Fetches album information in batches for given album IDs."""
+        album_features = {}
+        batch_size = 20  # Adjust the batch size as needed, considering the API's rate limits
+        for i in range(0, len(album_ids), batch_size):
+            batch_ids = album_ids[i:i + batch_size]
+            albums_data = self.sp.albums(batch_ids)['albums']
+            for album in albums_data:
+                album_features[album['id']] = album
+        return album_features
 
     def get_full_track_data(self, playlist_id):
         tracks_metadata = self.get_tracks_from_playlist(playlist_id)
 
-        # Extract the first artist ID from each track
+        # Extract artist and album IDs from each track
         artist_ids = [track['track']['artists'][0]['id'] for track in tracks_metadata if 'track' in track and track['track']['artists']]
+        album_ids = [track['track']['album']['id'] for track in tracks_metadata if 'track' in track and 'album' in track['track']]
 
-        # Fetch artist data in batches
+        # Fetch artist and album data in batches
         artist_features = self.get_artist_features_for_tracks(artist_ids)
+        album_features = self.get_album_features_for_tracks(album_ids)
 
-        # Map audio features and artist features to their respective tracks
+        # Map artist and album features to their respective tracks
         for track in tracks_metadata:
-            track_id = track['track']['id']
             artist_id = track['track']['artists'][0]['id']
+            album_id = track['track']['album']['id']
             track['track']['artist_info'] = artist_features.get(artist_id)
+            track['track']['album_info'] = album_features.get(album_id)
 
         return tracks_metadata
-
-    # def get_full_track_data(self, playlist_id):
-    #     """Fetches all tracks with metadata and audio features from the specified playlist."""
-    #     tracks_metadata = self.get_tracks_from_playlist(playlist_id)
-
-    #     # Extract track IDs
-    #     track_ids = [track['track']['id'] for track in tracks_metadata if 'track' in track and 'id' in track['track']]
-
-
-    #     # Fetch audio features for these track IDs
-    #     audio_features_list = self.get_audio_features_for_tracks(track_ids)
-    #     artist_features_list = self.get_artist_features_for_tracks(track_ids)
-
-    #     # Map audio features to their respective tracks
-    #     for i, track in enumerate(tracks_metadata):
-    #         track_id = track['track']['id']
-    #         # Find the corresponding audio features based on track ID
-    #         track['track']['audio_features'] = next((af for af in audio_features_list if af and af['id'] == track_id), None)
-    #         #Find the corresponding artist features based on track ID
-    #         ####TODO
-
-    #     return tracks_metadata
