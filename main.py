@@ -12,11 +12,16 @@ def choose_playlist(spotify_manager):
 def main():
     spotify_manager = SpotifyManager()
     playlist_id = choose_playlist(spotify_manager)
-    tracks = spotify_manager.get_tracks_from_playlist(playlist_id)
+    full_track_data = spotify_manager.get_full_track_data(playlist_id)
 
-    for track in tracks:
-        track_info = track['track']
-        print(f"{track_info['name']} by {track_info['artists'][0]['name']}")
-
+    for track_data in full_track_data:
+        track = track_data['track']
+        print(f"{track['name']} by {track['artists'][0]['name']}")
+        audio_features = track.get('audio_features')
+        if audio_features:
+            print(f"  - Tempo: {audio_features['tempo']}")
+            print(f"  - Key: {audio_features['key']}")
+            # Add more features as needed
+    print(track_data)
 if __name__ == "__main__":
     main()
