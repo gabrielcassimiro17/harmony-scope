@@ -69,21 +69,37 @@ class SpotifyManager:
         return album_features
 
     def get_full_track_data(self, playlist_id):
+        # Fetch tracks metadata
         tracks_metadata = self.get_tracks_from_playlist(playlist_id)
 
-        # Extract artist and album IDs from each track
-        artist_ids = [track['track']['artists'][0]['id'] for track in tracks_metadata if 'track' in track and track['track']['artists']]
-        album_ids = [track['track']['album']['id'] for track in tracks_metadata if 'track' in track and 'album' in track['track']]
+        # Extract track IDs
+        track_ids = [item['track']['id'] for item in tracks_metadata if item.get('track', {}).get('id')]
+
+        # Fetch audio features for these track IDs
+        audio_features_list = self.get_audio_features_for_tracks(track_ids)
+
+        # Convert list of audio features to a dictionary for easier access
+        audio_features_dict = {af['id']: af for af in audio_features_list if af}
 
         # Fetch artist and album data in batches
+        artist_ids = [track['track']['artists'][0]['id'] for track in tracks_metadata if track.get('track', {}).get('artists')]
+        album_ids = [track['track']['album']['id'] for track in tracks_metadata if track.get('track', {}).get('album')]
+
         artist_features = self.get_artist_features_for_tracks(artist_ids)
         album_features = self.get_album_features_for_tracks(album_ids)
 
-        # Map artist and album features to their respective tracks
-        for track in tracks_metadata:
-            artist_id = track['track']['artists'][0]['id']
-            album_id = track['track']['album']['id']
-            track['track']['artist_info'] = artist_features.get(artist_id)
-            track['track']['album_info'] = album_features.get(album_id)
+        # Map audio features, artist features, and album features to their respective tracks
+        for item in tracks_metadata:
+            track = item['track']
+            track_id = track['id']
+            artist_id = track['artists'][0]['id']
+            album_id = track['album']['id']
+
+            # Map audio features
+            track['audio_features'] = audio_features_dict.get(track_id, {})
+
+            # Map artist and album information
+            track['artist_info'] = artist_features.get(artist_id, {})
+            track['album_info'] = album_features.get(album_id, {})
 
         return tracks_metadata
