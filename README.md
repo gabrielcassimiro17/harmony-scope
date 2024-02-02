@@ -10,6 +10,12 @@ llm, then pass the clusters and filtered track info to llm to create the analysi
 The first version will contain only one llm call, but the evolution will contain
 a multi-agent conversation to create the review.
 
+TODO:
+- Add capability to fetch more than 50 palylist so the user can select the correct one.
+- Improve prompt with clear structure of the analysis
+- Test with multi-agent frameworks
+- Let the user select the model (gemini or open ai)
+- Add currently listening to the app
 
 Playlist Creator:
 Use the output of the playlist analyser to generate some interesting songs that

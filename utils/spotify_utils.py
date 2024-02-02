@@ -14,12 +14,13 @@ def select_playlist_streamlit(spotify_manager):
     playlist_names = [playlist['name'] for playlist in playlists["items"]]
 
     # Use Streamlit's selectbox for user selection
-    selected_playlist = st.selectbox("Select a Playlist:", playlist_names)
+    selected_playlist = st.sidebar.selectbox("Select a Playlist:", playlist_names)
 
     # Optionally, find the selected playlist details if needed for further processing
     selected_playlist_details = next((item for item in playlists["items"] if item['name'] == selected_playlist), None)
 
-    st.write(f"You selected: {selected_playlist}")
+    st.write(f"Selected Playlist: {selected_playlist}")
+
 
     return selected_playlist_details["id"]
 

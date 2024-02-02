@@ -7,7 +7,7 @@ load_dotenv(find_dotenv())
 
 
 class SpotifyManager:
-    def __init__(self, scope="playlist-read-private"):
+    def __init__(self, scope="playlist-read-private user-read-playback-state"):
         self.sp = spotipy.Spotify(
             auth_manager=SpotifyOAuth(
                 client_id=os.getenv("SPOTIPY_CLIENT_ID"),
@@ -16,6 +16,10 @@ class SpotifyManager:
                 scope=scope,
             )
         )
+
+    def get_currently_playing(self):
+        """Fetches the currently playing track, if any."""
+        return self.sp.current_playback()
 
     def get_user_playlists(self):
         """Fetches a list of the user's playlists."""
