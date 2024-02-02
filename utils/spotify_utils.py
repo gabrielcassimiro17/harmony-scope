@@ -11,18 +11,42 @@ def choose_playlist(spotify_manager):
 
 def select_playlist_streamlit(spotify_manager):
     playlists = spotify_manager.get_user_playlists()
-    playlist_names = [playlist['name'] for playlist in playlists["items"]]
+    playlist_names = [playlist['name'] for playlist in playlists]  # Directly iterating over playlists list
 
     # Use Streamlit's selectbox for user selection
     selected_playlist = st.sidebar.selectbox("Select a Playlist:", playlist_names)
 
-    # Optionally, find the selected playlist details if needed for further processing
-    selected_playlist_details = next((item for item in playlists["items"] if item['name'] == selected_playlist), None)
+    # Find the selected playlist details
+    selected_playlist_details = next((playlist for playlist in playlists if playlist['name'] == selected_playlist), None)
+    container_style = """
+    <style>
+    .spotify-green-container {
+        background-color: #1DB954; /* Spotify Green */
+        color: white;
+        padding: 5px 10px; /* Reduced vertical padding to make the container thinner */
+        border-radius: 5px;
+        margin: 10px 0;
+        text-align: center; /* Center the text inside the container */
+    }
+    </style>
+    """
 
-    st.write(f"Selected Playlist: {selected_playlist}")
+    # Inject custom CSS with markdown
+    st.markdown(container_style, unsafe_allow_html=True)
+    st.markdown('<div class="spotify-green-container">', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    # Create a container with the custom class
+
+    st.markdown(f"**Selected Playlist:** {selected_playlist}", unsafe_allow_html=True)
+    st.markdown(f"**Number of songs in Playlist:** {selected_playlist_details['tracks']['total']}", unsafe_allow_html=True)
 
 
-    return selected_playlist_details["id"]
+    # Make sure to safely access the "id" key
+    if selected_playlist_details and "id" in selected_playlist_details:
+        return selected_playlist_details["id"], selected_playlist_details['tracks']['total']
+    else:
+        st.sidebar.write("Error: Selected playlist details are not available.")
+        return None
 
 
 

@@ -22,8 +22,14 @@ class SpotifyManager:
         return self.sp.current_playback()
 
     def get_user_playlists(self):
-        """Fetches a list of the user's playlists."""
-        return self.sp.current_user_playlists()
+        """Fetches all user playlists."""
+        playlists = []
+        results = self.sp.current_user_playlists(limit=50)
+        playlists.extend(results['items'])
+        while results['next']:
+            results = self.sp.next(results)
+            playlists.extend(results['items'])
+        return playlists
 
     def get_playlist_by_id(self, playlist_id):
         """Fetches a specific playlist by its ID."""

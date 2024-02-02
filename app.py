@@ -20,12 +20,15 @@ def streamlit_main(spotify_manager):
         st.sidebar.write("No track is currently playing.")
 
 
-    playlist_id = select_playlist_streamlit(spotify_manager)
+    playlist_id, number_of_tracks = select_playlist_streamlit(spotify_manager)
 
     if st.sidebar.button("Analyze Playlist") and playlist_id:
         # Placeholder for loading message
         loading_data_placeholder = st.empty()
         loading_data_placeholder.write("Fetching track data from Spotify...")
+
+        if number_of_tracks > 100:
+            st.write("This playlist has more than 100 songs. For the analysis, we will sample 100 songs of the playlist.")
 
         full_track_data = spotify_manager.get_full_track_data(playlist_id)
 
