@@ -1,5 +1,5 @@
 import pandas as pd
-
+import streamlit as st
 
 def choose_playlist(spotify_manager):
     playlists = spotify_manager.get_user_playlists()
@@ -8,6 +8,21 @@ def choose_playlist(spotify_manager):
 
     choice = int(input("Enter the number of the playlist you want to analyze: "))
     return playlists["items"][choice - 1]["id"]
+
+def select_playlist_streamlit(spotify_manager):
+    playlists = spotify_manager.get_user_playlists()
+    playlist_names = [playlist['name'] for playlist in playlists["items"]]
+
+    # Use Streamlit's selectbox for user selection
+    selected_playlist = st.selectbox("Select a Playlist:", playlist_names)
+
+    # Optionally, find the selected playlist details if needed for further processing
+    selected_playlist_details = next((item for item in playlists["items"] if item['name'] == selected_playlist), None)
+
+    st.write(f"You selected: {selected_playlist}")
+
+    return selected_playlist_details["id"]
+
 
 
 def dict_to_dataframe(track_data):
