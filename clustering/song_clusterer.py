@@ -5,7 +5,7 @@ import numpy as np
 
 
 class SongClusterer:
-    def __init__(self, features_cols, hyperparams):
+    def __init__(self, hyperparams):
         """
         Initializes the SongClusterer with specific features for clustering and DBSCAN hyperparameters.
 
@@ -62,12 +62,27 @@ class SongClusterer:
         - df: pandas DataFrame with an additional 'cluster' column from DBSCAN clustering.
         """
         noise_count = (df["cluster"] == -1).sum()
-        print("Number of noise points:", noise_count)
 
         # Select only numeric columns for mean calculation
         numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
 
         # Calculate and print mean of features for each cluster, including noise
         cluster_means = df.groupby("cluster")[numeric_cols].mean()
-        print("Mean of features by cluster:")
-        print(cluster_means)
+
+        cluster_means_dict = cluster_means.to_dict(orient='index')
+
+        # Initialize an empty string to accumulate the information
+        info_str = ""
+
+        # Add the count of songs without a cluster
+        noise_count = (df['cluster'] == -1).sum()
+        info_str += f"Songs without cluster: {noise_count}\n\n"
+
+        # Loop through each cluster to add its information to the string
+        for cluster_id, features in cluster_means_dict.items():
+            info_str += f"Cluster {cluster_id}:\n"
+            for feature, mean_value in features.items():
+                info_str += f"  {feature}: {mean_value:.2f}\n"  # Formatting mean values to two decimal places
+            info_str += "\n"  # Add a blank line for separation between clusters
+
+        return info_str
