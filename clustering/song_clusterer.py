@@ -13,7 +13,20 @@ class SongClusterer:
         - features_cols: List of columns to be used as features for clustering.
         - hyperparams: Dict containing hyperparameters for DBSCAN, specifically 'eps' and 'min_samples'.
         """
-        self.features_cols = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature']
+        self.features_cols = [
+            "danceability",
+            "energy",
+            "key",
+            "loudness",
+            "mode",
+            "speechiness",
+            "acousticness",
+            "instrumentalness",
+            "liveness",
+            "valence",
+            "tempo",
+            "time_signature",
+        ]
         self.hyperparams = hyperparams
 
     def apply_dbscan_clustering(self, df):
@@ -31,11 +44,13 @@ class SongClusterer:
         features_standardized = StandardScaler().fit_transform(features)
 
         # Applying DBSCAN with the provided hyperparameters
-        dbscan = DBSCAN(eps=self.hyperparams['eps'], min_samples=self.hyperparams['min_samples'])
+        dbscan = DBSCAN(
+            eps=self.hyperparams["eps"], min_samples=self.hyperparams["min_samples"]
+        )
         clusters = dbscan.fit_predict(features_standardized)
 
         # Adding the cluster labels to the DataFrame
-        df['cluster'] = clusters
+        df["cluster"] = clusters
 
         return df
 
@@ -46,13 +61,13 @@ class SongClusterer:
         Parameters:
         - df: pandas DataFrame with an additional 'cluster' column from DBSCAN clustering.
         """
-        noise_count = (df['cluster'] == -1).sum()
+        noise_count = (df["cluster"] == -1).sum()
         print("Number of noise points:", noise_count)
 
         # Select only numeric columns for mean calculation
         numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
 
         # Calculate and print mean of features for each cluster, including noise
-        cluster_means = df.groupby('cluster')[numeric_cols].mean()
+        cluster_means = df.groupby("cluster")[numeric_cols].mean()
         print("Mean of features by cluster:")
         print(cluster_means)
