@@ -7,8 +7,7 @@ from llm.chains import build_analyser_chain
 from llm.llm_config import initialize_openai_llm, initialize_google_llm
 
 def streamlit_main(spotify_manager):
-    # Modified to use the select_playlist_streamlit function directly in the UI
-    playlist_id = select_playlist_streamlit(spotify_manager)
+
 
     current_playback = spotify_manager.get_currently_playing()
     if current_playback and current_playback.get('item'):
@@ -19,6 +18,9 @@ def streamlit_main(spotify_manager):
     else:
         st.sidebar.write("### Currently Playing")
         st.sidebar.write("No track is currently playing.")
+
+
+    playlist_id = select_playlist_streamlit(spotify_manager)
 
     if st.sidebar.button("Analyze Playlist") and playlist_id:
         # Placeholder for loading message

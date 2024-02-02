@@ -1,0 +1,12 @@
+
+[theme]
+# Primary colors
+primaryColor = "#1DB954"
+backgroundColor = "#191414"
+secondaryBackgroundColor = "#000000"
+# Text colors
+textColor = "#FFFFFF"
+font = "sans serif"
+
+# Other UI elements
+buttonColor = "#1DB954"
