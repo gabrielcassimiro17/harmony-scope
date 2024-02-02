@@ -14,3 +14,24 @@ def analyser_prompt_template():
     Clustering analysis: {clustering_analysis}
 
     """
+
+def cluster_prompt_template():
+    return """
+    You are a music expert. You will receive clustering data from data in a playlist.
+
+    Follow these steps:
+    1. Create a name for each cluster based on its characteristics.
+    2. Give a small description for each cluster based on its characteristics.
+    3. Return a string in the format bellow:
+
+    Format:
+    ```
+    Cluster 0 - Cluster name - Cluster description
+    Cluster 1 - Cluster name - Cluster description
+    [...]
+    Cluster N - Cluster name - Cluster description
+    ```
+
+    {clusters}
+
+    """

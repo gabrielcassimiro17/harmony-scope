@@ -35,15 +35,19 @@ class SpotifyManager:
         """Fetches a specific playlist by its ID."""
         return self.sp.playlist(playlist_id)
 
-    def get_tracks_from_playlist(self, playlist_id):
-        """Fetches all tracks from the specified playlist."""
+    def get_tracks_from_playlist(self, playlist_id, max_songs=500):
+        """Fetches up to max_songs tracks from the specified playlist."""
         tracks = []
         results = self.sp.playlist_items(playlist_id)
         tracks.extend(results["items"])
 
-        while results["next"]:
+        while results["next"] and len(tracks) < max_songs:
             results = self.sp.next(results)
             tracks.extend(results["items"])
+            # If we have fetched max_songs, truncate the list of tracks
+            if len(tracks) >= max_songs:
+                tracks = tracks[:max_songs]
+                break
 
         return tracks
 
