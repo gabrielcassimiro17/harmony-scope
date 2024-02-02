@@ -1,6 +1,8 @@
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import numpy as np
+
 
 class SongClusterer:
     def __init__(self, features_cols, hyperparams):
@@ -11,7 +13,7 @@ class SongClusterer:
         - features_cols: List of columns to be used as features for clustering.
         - hyperparams: Dict containing hyperparameters for DBSCAN, specifically 'eps' and 'min_samples'.
         """
-        self.features_cols = features_cols
+        self.features_cols = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature']
         self.hyperparams = hyperparams
 
     def apply_dbscan_clustering(self, df):
@@ -47,7 +49,10 @@ class SongClusterer:
         noise_count = (df['cluster'] == -1).sum()
         print("Number of noise points:", noise_count)
 
+        # Select only numeric columns for mean calculation
+        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+
         # Calculate and print mean of features for each cluster, including noise
-        cluster_means = df.groupby('cluster').mean()
+        cluster_means = df.groupby('cluster')[numeric_cols].mean()
         print("Mean of features by cluster:")
         print(cluster_means)
