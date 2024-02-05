@@ -69,13 +69,13 @@ class SongClusterer:
         # Calculate and print mean of features for each cluster, including noise
         cluster_means = df.groupby("cluster")[numeric_cols].mean()
 
-        cluster_means_dict = cluster_means.to_dict(orient='index')
+        cluster_means_dict = cluster_means.to_dict(orient="index")
 
         # Initialize an empty string to accumulate the information
         info_str = ""
 
         # Add the count of songs without a cluster
-        noise_count = (df['cluster'] == -1).sum()
+        noise_count = (df["cluster"] == -1).sum()
         info_str += f"Songs without cluster: {noise_count}\n\n"
 
         # Loop through each cluster to add its information to the string

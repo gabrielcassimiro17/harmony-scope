@@ -12,7 +12,6 @@ a multi-agent conversation to create the review.
 
 TODO:
 - Improve prompt with clear structure of the analysis
-- Add simple auth with st.secrets and limit the number of attempts
 - Test with multi-agent frameworks
 - Let the user select the model (gemini or open ai)
 - Improve clustering method

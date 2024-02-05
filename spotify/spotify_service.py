@@ -2,6 +2,7 @@ import os
 import spotipy
 from dotenv import find_dotenv, load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
+import streamlit as st
 
 load_dotenv(find_dotenv())
 
@@ -10,9 +11,12 @@ class SpotifyManager:
     def __init__(self, scope="playlist-read-private user-read-playback-state"):
         self.sp = spotipy.Spotify(
             auth_manager=SpotifyOAuth(
-                client_id=os.getenv("SPOTIPY_CLIENT_ID"),
-                client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
-                redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
+                client_id=os.getenv("SPOTIPY_CLIENT_ID")
+                or st.secrets["SPOTIPY_CLIENT_ID"],
+                client_secret=os.getenv("SPOTIPY_CLIENT_SECRET")
+                or st.secrets["SPOTIPY_CLIENT_SECRET"],
+                redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI")
+                or st.secrets["SPOTIPY_REDIRECT_URI"],
                 scope=scope,
             )
         )
@@ -25,10 +29,10 @@ class SpotifyManager:
         """Fetches all user playlists."""
         playlists = []
         results = self.sp.current_user_playlists(limit=50)
-        playlists.extend(results['items'])
-        while results['next']:
+        playlists.extend(results["items"])
+        while results["next"]:
             results = self.sp.next(results)
-            playlists.extend(results['items'])
+            playlists.extend(results["items"])
         return playlists
 
     def get_playlist_by_id(self, playlist_id):

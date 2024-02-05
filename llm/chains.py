@@ -4,18 +4,17 @@ from operator import itemgetter
 from llm.llm_config import initialize_google_llm
 
 
-
 def build_analyser_chain(llm):
     prompt = PromptTemplate(
         template=analyser_prompt_template(),
-        input_variables=["language", "songs", "clustering_analysis"]
+        input_variables=["language", "songs", "clustering_analysis"],
     )
 
     chain = (
         {
             "language": itemgetter("language"),
             "songs": itemgetter("songs"),
-            "clustering_analysis": itemgetter("clustering_analysis")
+            "clustering_analysis": itemgetter("clustering_analysis"),
         }
         | prompt
         | llm
@@ -23,11 +22,11 @@ def build_analyser_chain(llm):
 
     return chain
 
+
 def build_cluster_chain(llm):
     prompt = PromptTemplate(
-        template=cluster_prompt_template(),
-        input_variables=["clusters"]
-        )
+        template=cluster_prompt_template(), input_variables=["clusters"]
+    )
 
     chain = (
         {

@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+
 def choose_playlist(spotify_manager):
     playlists = spotify_manager.get_user_playlists()
     for i, playlist in enumerate(playlists["items"]):
@@ -9,15 +10,21 @@ def choose_playlist(spotify_manager):
     choice = int(input("Enter the number of the playlist you want to analyze: "))
     return playlists["items"][choice - 1]["id"]
 
+
 def select_playlist_streamlit(spotify_manager):
     playlists = spotify_manager.get_user_playlists()
-    playlist_names = [playlist['name'] for playlist in playlists]  # Directly iterating over playlists list
+    playlist_names = [
+        playlist["name"] for playlist in playlists
+    ]  # Directly iterating over playlists list
 
     # Use Streamlit's selectbox for user selection
     selected_playlist = st.sidebar.selectbox("Select a Playlist:", playlist_names)
 
     # Find the selected playlist details
-    selected_playlist_details = next((playlist for playlist in playlists if playlist['name'] == selected_playlist), None)
+    selected_playlist_details = next(
+        (playlist for playlist in playlists if playlist["name"] == selected_playlist),
+        None,
+    )
     container_style = """
     <style>
     .spotify-green-container {
@@ -34,20 +41,23 @@ def select_playlist_streamlit(spotify_manager):
     # Inject custom CSS with markdown
     st.markdown(container_style, unsafe_allow_html=True)
     st.markdown('<div class="spotify-green-container">', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
     # Create a container with the custom class
 
     st.markdown(f"**Selected Playlist:** {selected_playlist}", unsafe_allow_html=True)
-    st.markdown(f"**Number of songs in Playlist:** {selected_playlist_details['tracks']['total']}", unsafe_allow_html=True)
-
+    st.markdown(
+        f"**Number of songs in Playlist:** {selected_playlist_details['tracks']['total']}",
+        unsafe_allow_html=True,
+    )
 
     # Make sure to safely access the "id" key
     if selected_playlist_details and "id" in selected_playlist_details:
-        return selected_playlist_details["id"], selected_playlist_details['tracks']['total']
+        return selected_playlist_details["id"], selected_playlist_details["tracks"][
+            "total"
+        ]
     else:
         st.sidebar.write("Error: Selected playlist details are not available.")
         return None
-
 
 
 def dict_to_dataframe(track_data):

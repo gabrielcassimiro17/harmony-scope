@@ -5,6 +5,7 @@ import streamlit as st
 def sample_playlist(song_list, sample_size):
     return random.sample(song_list, sample_size)
 
+
 def check_password():
     """Check the password entered by the user."""
     if st.session_state.login_attempts >= 3:
@@ -12,7 +13,10 @@ def check_password():
         return False
 
     # Check if the password matches
-    if st.sidebar.text_input("Enter the password:", type="password") == st.secrets["password"]:
+    if (
+        st.sidebar.text_input("Enter the password:", type="password")
+        == st.secrets["password"]
+    ):
         st.sidebar.success("Password is correct. You are logged in.")
         return True
     else:
