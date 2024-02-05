@@ -8,11 +8,12 @@ from llm.llm_config import initialize_google_llm
 def build_analyser_chain(llm):
     prompt = PromptTemplate(
         template=analyser_prompt_template(),
-        input_variables=["songs", "clustering_analysis"]
+        input_variables=["language", "songs", "clustering_analysis"]
     )
 
     chain = (
         {
+            "language": itemgetter("language"),
             "songs": itemgetter("songs"),
             "clustering_analysis": itemgetter("clustering_analysis")
         }

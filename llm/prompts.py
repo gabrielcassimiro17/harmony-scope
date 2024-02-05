@@ -8,6 +8,8 @@ def analyser_prompt_template():
     and other important information you judge is valuable. You will receive a json with the songs and
     a clustering analysis of the groups of songs.
 
+    Answer in the following Language: {language}
+
 
     Songs: {songs}
 

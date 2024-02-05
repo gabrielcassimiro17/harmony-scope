@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.spotify_utils import select_playlist_streamlit, filter_track_data, dict_to_dataframe
-from utils.utils import sample_playlist
+from utils.utils import sample_playlist, check_password
 from clustering.song_clusterer import SongClusterer
 import pandas as pd
 from spotify.spotify_service import SpotifyManager
@@ -9,6 +9,15 @@ from llm.llm_config import initialize_openai_llm, initialize_google_llm
 
 def streamlit_main(spotify_manager):
 
+    if 'login_attempts' not in st.session_state:
+        st.session_state['login_attempts'] = 0
+
+    if check_password():
+        # If the password is correct, display the main app
+        st.write("Welcome")
+    else:
+        # If the password is incorrect, do not display the main app
+        st.stop()
 
     current_playback = spotify_manager.get_currently_playing()
     if current_playback and current_playback.get('item'):
@@ -22,6 +31,8 @@ def streamlit_main(spotify_manager):
 
 
     playlist_id, number_of_tracks = select_playlist_streamlit(spotify_manager)
+
+    language = st.sidebar.selectbox("Language:", ["English", "Portuguese"])
 
     if st.sidebar.button("Analyze Playlist") and playlist_id:
         # Placeholder for loading message
@@ -98,6 +109,7 @@ def streamlit_main(spotify_manager):
 
 
             inputs = {
+                "language": language,
                 "songs": songs,
                 "clustering_analysis": cluster_names
             }

@@ -15,7 +15,7 @@ TODO:
 - Add simple auth with st.secrets and limit the number of attempts
 - Test with multi-agent frameworks
 - Let the user select the model (gemini or open ai)
-- Select the language of the output
+- Improve clustering method
 
 Playlist Creator:
 Use the output of the playlist analyser to generate some interesting songs that
