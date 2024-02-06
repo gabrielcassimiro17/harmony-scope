@@ -6,20 +6,60 @@ import streamlit as st
 
 load_dotenv(find_dotenv())
 
-
 class SpotifyManager:
     def __init__(self, scope="playlist-read-private user-read-playback-state"):
-        self.sp = spotipy.Spotify(
-            auth_manager=SpotifyOAuth(
-                client_id=os.getenv("SPOTIPY_CLIENT_ID")
-                or st.secrets["SPOTIPY_CLIENT_ID"],
-                client_secret=os.getenv("SPOTIPY_CLIENT_SECRET")
-                or st.secrets["SPOTIPY_CLIENT_SECRET"],
-                redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI")
-                or st.secrets["SPOTIPY_REDIRECT_URI"],
-                scope=scope,
-            )
+        # Initialize OAuth without automatically setting the token
+        self.oauth = SpotifyOAuth(
+            client_id=os.getenv("SPOTIPY_CLIENT_ID") or st.secrets["SPOTIPY_CLIENT_ID"],
+            client_secret=os.getenv("SPOTIPY_CLIENT_SECRET") or st.secrets["SPOTIPY_CLIENT_SECRET"],
+            redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI") or st.secrets["SPOTIPY_REDIRECT_URI"],
+            scope=scope,
+            cache_path=".cache-" + st.session_state["username"] if "username" in st.session_state else ".cache"
         )
+
+        # Attempt to load a cached token from the session or initiate the auth flow
+        self.token_info = self.get_cached_token()
+
+        if self.token_info:
+            self.sp = spotipy.Spotify(auth=self.token_info['access_token'])
+        else:
+            self.sp = None
+
+    def get_cached_token(self):
+        # Check if token is in session state and valid; otherwise, initiate auth flow
+        if "token_info" in st.session_state and self.oauth.is_token_expired(st.session_state["token_info"]) == False:
+            print("token info found")
+            return st.session_state["token_info"]
+        else:
+            # Try to get a token from the cache or redirect for authentication
+            token_info = None
+            try:
+                token_info = self.oauth.get_cached_token()
+                if not token_info:
+                    auth_url = self.oauth.get_authorize_url()
+                    st.experimental_rerun()
+            except AttributeError:
+                # Handle missing cache or other errors by redirecting to auth URL
+                auth_url = self.oauth.get_authorize_url()
+                st.markdown(f"[Log in with Spotify]({auth_url})")
+
+            if token_info:
+                # Save the token in session state
+                st.session_state["token_info"] = token_info
+
+            return token_info
+
+    def authenticate_user(self):
+        # Call this method to trigger user authentication flow
+        if not self.sp:
+            # No valid token, so we need to authenticate
+            self.redirect_for_authentication()
+
+    def redirect_for_authentication(self):
+        # Direct user to Spotify auth page
+        auth_url = self.oauth.get_authorize_url()
+        st.markdown(f"[Please log in with Spotify]({auth_url})", unsafe_allow_html=True)
+
 
     def get_currently_playing(self):
         """Fetches the currently playing track, if any."""
