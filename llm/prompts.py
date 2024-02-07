@@ -48,3 +48,17 @@ def cluster_prompt_template():
     {clusters}
 
     """
+
+def recommender_prompt_template():
+    return """
+    Given the analysis of a playlist below, recommend 10 to 15 songs that could be added to this playlist.
+
+    Generate general suggestions for this playlist given its characteristics as well.
+
+    Do not suggest songs already in the playlist.
+
+    Songs in the playlist: {songs_in_playlist}
+
+    Playlist Analysis: {playlist_analysis}
+
+    """

@@ -8,7 +8,7 @@ from utils.utils import sample_playlist, check_password
 from clustering.song_clusterer import SongClusterer
 import pandas as pd
 from spotify.spotify_service import SpotifyManager
-from llm.chains import build_analyser_chain, build_cluster_chain
+from llm.chains import build_analyser_chain, build_cluster_chain, build_recommender_chain
 from llm.llm_config import initialize_openai_llm, initialize_google_llm
 
 
@@ -95,6 +95,7 @@ def streamlit_main(spotify_manager):
             llm = initialize_google_llm()
             cluster_chain = build_cluster_chain(llm)
             analyser_chain = build_analyser_chain(llm)
+            recommender_chain = build_recommender_chain(llm)
 
             if clustered_df["cluster"].nunique() > 1:
                 ## clustering analysis call to llm
@@ -125,8 +126,30 @@ def streamlit_main(spotify_manager):
 
             llm_analysis_placeholder.empty()
 
+            llm_analysis_placeholder = st.empty()
+            llm_analysis_placeholder.write("Generating Recommendations")
+            llm_analysis_placeholder.empty()
+
+
             st.subheader("AI Analysis")
             st.write(response.content)
+
+            songs_in_playlist = [song['song_name'] for song in songs]
+            playlist_analysis = response.content
+
+
+            recommender_inputs = {
+                "songs_in_playlist": songs_in_playlist,
+                "playlist_analysis": playlist_analysis,
+            }
+
+            recommender_response = recommender_chain.invoke(recommender_inputs)
+
+            st.subheader("AI recommended songs:")
+            st.write(recommender_response.content)
+
+
+
 
         else:
             st.write("No track data to analyze.")
