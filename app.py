@@ -133,6 +133,13 @@ def streamlit_main(spotify_manager):
 
 
 if __name__ == "__main__":
-    st.title("Spotify Playlist Analyzer")
+
     spotify_manager = SpotifyManager()
-    streamlit_main(spotify_manager)
+    spotify_manager.authenticate_user()
+
+    if spotify_manager.sp:
+        # Proceed with the app if the Spotify client is available
+        streamlit_main(spotify_manager)
+    else:
+        # Optionally, handle the case where the user is not authenticated
+        st.write("Please authenticate to continue.")
