@@ -28,13 +28,10 @@ class SpotifyManager:
                 # Attempt to authenticate the user and get a new token
                 query_params = st.query_params
                 code = query_params.get("code")
-                print(code)
-                print(type(code))
                 if code:
                     token_info = self.oauth.get_access_token(code, as_dict=False, check_cache=False)
                     if token_info:
                         st.session_state["token_info"] = token_info
-                        print(f"SESSOIN TOKEN {st.session_state['token_info']}")
                         self.sp = spotipy.Spotify(auth=token_info)
                     else:
                         st.error("Failed to authenticate with Spotify.")
